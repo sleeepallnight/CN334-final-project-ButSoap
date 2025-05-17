@@ -1,0 +1,45 @@
+<div class="module-content">
+    <canvas id="salesChart" width="100%" height="60"></canvas>
+  </div>
+  
+  {{ module.context.labels|json_script:"labels-data" }}
+  {{ module.context.data|json_script:"orders-data" }}
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document.getElementById("salesChart").getContext("2d");
+      const labels = JSON.parse(document.getElementById("labels-data").textContent);
+      const data = JSON.parse(document.getElementById("orders-data").textContent);
+  
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'จำนวนออเดอร์รายวัน',
+            data: data,
+            backgroundColor: 'rgba(116, 136, 55, 0.2)',
+            borderColor: '#748837',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: {
+              display: true,
+              text: 'แนวโน้มจำนวนการสั่งซื้อ'
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: 'วันที่' } },
+            y: { title: { display: true, text: 'จำนวนคำสั่งซื้อ' }, beginAtZero: true }
+          }
+        }
+      });
+    });
+  </script>  

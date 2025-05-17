@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=django_soap
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=tkcw2004
+    ports:
+      - "5433:5432"
+    networks:
+      - backend
+
+  product_api:
+    build: ./product_service
+    command: python manage.py runserver 0.0.0.0:8001
+    volumes:
+      - ./product_service:/app
+    working_dir: /app
+    ports:
+      - "3341:8001"
+    env_file:
+      - ./env/product.env
+    depends_on:
+      - db
+    networks:
+      - backend
+
+  user_api:
+    build: ./user_service
+    command: python manage.py runserver 0.0.0.0:8002
+    volumes:
+      - ./user_service:/app
+    working_dir: /app
+    ports:
+      - "3342:8002"
+    env_file:
+      - ./env/user.env
+    depends_on:
+      - db
+    networks:
+      - backend
+
+  front_end:
+    build: ./frontend
+    command: npm run dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3343:3000"
+    networks:
+      - backend
+    env_file:
+      - ./frontend/.env.local
+
+networks:
+  backend:
